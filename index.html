@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ramoncita · Tu local en la palma</title>
+<style>
+  :root{
+    --rojo:#E11D2A; --rojo-2:#ff3a47;
+    --bg:#0c0c0e; --panel:#16161a; --panel-2:#1e1e24;
+    --linea:#2a2a31; --txt:#f4f4f6; --txt-2:#a7a7b3; --txt-3:#71717f;
+    --verde:#22c55e; --amarillo:#f5b301; --rojo-alerta:#ef4444;
+    --radio:18px; --sombra:0 18px 50px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%, #1a1213 0%, #0c0c0e 55%);
+    color:var(--txt); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .telefono{
+    width:100%; max-width:412px; height:860px; max-height:92vh;
+    background:var(--bg); border-radius:42px; position:relative; overflow:hidden;
+    border:11px solid #000; box-shadow:var(--sombra); display:flex; flex-direction:column;
+  }
+  @media (max-width:480px){
+    body{padding:0}
+    .telefono{max-width:100%;height:100vh;max-height:none;border:none;border-radius:0}
+  }
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:26px;background:#000;border-radius:0 0 16px 16px;z-index:40}
+
+  header{padding:30px 18px 12px;display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(180deg,#17080a 0%, rgba(12,12,14,0) 100%)}
+  .marca{display:flex;align-items:center;gap:10px}
+  .marca img{height:30px;width:auto;display:block}
+  .marca .logo-txt{font-weight:800;font-size:19px;letter-spacing:.3px}
+  .marca .logo-txt b{color:var(--rojo)}
+  .fudo{font-size:10.5px;color:var(--txt-2);display:flex;align-items:center;gap:5px;background:var(--panel);
+    padding:5px 9px;border-radius:999px;border:1px solid var(--linea)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--verde);box-shadow:0 0 8px var(--verde)}
+
+  main{flex:1;overflow-y:auto;padding:6px 16px 96px;scroll-behavior:smooth}
+  main::-webkit-scrollbar{width:0}
+  .pantalla{display:none;animation:fade .35s ease}
+  .pantalla.activa{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  h2.titulo{font-size:13px;text-transform:uppercase;letter-spacing:1.3px;color:var(--txt-3);margin:18px 4px 10px;font-weight:700}
+  .saludo{font-size:22px;font-weight:800;margin:6px 4px 2px}
+  .saludo .hora{color:var(--txt-2);font-weight:500;font-size:14px}
+
+  .card{background:var(--panel);border:1px solid var(--linea);border-radius:var(--radio);padding:16px;margin-bottom:12px}
+  .card.acento{background:linear-gradient(160deg,#1f0d10,#16161a);border-color:#3a1418}
+
+  .noti{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(160deg,#2a0e12,#1a0a0c);
+    border:1px solid var(--rojo);border-radius:var(--radio);padding:14px;margin-bottom:14px;
+    animation:entra .6s cubic-bezier(.2,.9,.3,1.2) both}
+  @keyframes entra{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}
+  .noti .ic{font-size:22px;line-height:1}
+  .noti b{display:block;font-size:14px;margin-bottom:2px}
+  .noti span{font-size:12.5px;color:var(--txt-2)}
+
+  .kpi-hero{display:flex;align-items:flex-end;justify-content:space-between}
+  .kpi-hero .val{font-size:34px;font-weight:800;letter-spacing:-.5px}
+  .kpi-hero .lbl{font-size:12px;color:var(--txt-2);margin-top:2px}
+  .chip-up{font-size:12px;font-weight:700;color:var(--verde);background:rgba(34,197,94,.12);padding:4px 9px;border-radius:999px}
+  .chip-down{color:var(--rojo-alerta);background:rgba(239,68,68,.12)}
+
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mini{background:var(--panel-2);border:1px solid var(--linea);border-radius:14px;padding:12px}
+  .mini .v{font-size:19px;font-weight:800}
+  .mini .l{font-size:11px;color:var(--txt-2);margin-top:2px}
+
+  .barra{height:12px;background:var(--panel-2);border-radius:999px;overflow:hidden;margin:10px 0 6px;position:relative}
+  .barra > i{display:block;height:100%;background:linear-gradient(90deg,var(--rojo),var(--rojo-2));border-radius:999px}
+  .barra-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-2)}
+
+  .resumen{font-size:13.5px;line-height:1.55;color:#e6e6ea}
+  .resumen .hl{color:var(--rojo-2);font-weight:600}
+
+  .tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 7px;border-radius:6px;vertical-align:middle}
+  .t-avisa{background:rgba(245,179,1,.14);color:var(--amarillo)}
+  .t-propone{background:rgba(56,132,255,.16);color:#69a1ff}
+  .t-ejecuta{background:rgba(34,197,94,.14);color:var(--verde)}
+
+  .fila{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--linea)}
+  .fila:last-child{border-bottom:none}
+  .fila .nom{font-size:14px;font-weight:600}
+  .fila .sub{font-size:11.5px;color:var(--txt-2)}
+  .fila .der{text-align:right;font-size:13px;font-weight:700;white-space:nowrap}
+
+  .pill{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--linea);color:var(--txt-2);background:var(--panel-2)}
+
+  .matriz{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+  .cuad{border-radius:14px;padding:11px;min-height:96px;border:1px solid var(--linea)}
+  .cuad h4{font-size:12px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+  .cuad small{display:block;font-size:10px;color:var(--txt-3);margin-top:-4px;margin-bottom:7px}
+  .cuad .plato{font-size:11.5px;background:var(--panel-2);border:1px solid var(--linea);border-radius:8px;padding:5px 8px;margin-bottom:5px;cursor:pointer}
+  .c-estrella{background:linear-gradient(160deg,#10231a,#16161a)}
+  .c-caballo{background:linear-gradient(160deg,#231f10,#16161a)}
+  .c-puzzle{background:linear-gradient(160deg,#101a23,#16161a)}
+  .c-perro{background:linear-gradient(160deg,#231013,#16161a)}
+
+  .platofoto{display:flex;gap:12px;align-items:center}
+  .platofoto img{width:58px;height:58px;border-radius:12px;object-fit:cover;background:var(--panel-2)}
+
+  .sem{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:7px}
+  .s-v{background:var(--verde)} .s-a{background:var(--amarillo)} .s-r{background:var(--rojo-alerta);box-shadow:0 0 8px var(--rojo-alerta)}
+
+  .heat{display:grid;grid-template-columns:auto repeat(6,1fr);gap:3px;font-size:9px}
+  .heat .hd{color:var(--txt-3);text-align:center;padding:2px 0}
+  .heat .rl{color:var(--txt-3);padding-right:4px;text-align:right;align-self:center}
+  .heat i{height:16px;border-radius:3px;display:block}
+
+  .btn{display:block;width:100%;text-align:center;background:var(--rojo);color:#fff;font-weight:700;font-size:14px;
+    padding:13px;border:none;border-radius:13px;cursor:pointer;margin-top:6px}
+  .btn.sec{background:var(--panel-2);border:1px solid var(--linea);color:var(--txt)}
+  .btn-mini{font-size:12px;padding:8px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--linea);color:var(--txt);cursor:pointer;font-weight:600}
+
+  .chat-wrap{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
+  .msg{max-width:84%;padding:11px 13px;border-radius:15px;font-size:13.5px;line-height:1.5}
+  .msg.r{align-self:flex-start;background:var(--panel);border:1px solid var(--linea);border-top-left-radius:5px}
+  .msg.u{align-self:flex-end;background:var(--rojo);border-top-right-radius:5px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+  .chip-q{font-size:12px;padding:8px 11px;border-radius:999px;background:var(--panel-2);border:1px solid var(--linea);color:#dcdce2;cursor:pointer}
+  .chip-q:active{background:var(--rojo)}
+  .ramon-cab{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .ramon-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(160deg,var(--rojo),#7a0d14);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .ramon-cab b{font-size:15px} .ramon-cab span{font-size:11px;color:var(--txt-2)}
+
+  .cap{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--linea)}
+  .cap .ic{font-size:19px}
+  .cap b{font-size:14px}.cap p{font-size:12px;color:var(--txt-2);margin-top:2px;line-height:1.45}
+
+  nav{position:absolute;bottom:0;left:0;right:0;background:rgba(14,14,16,.92);backdrop-filter:blur(14px);
+    border-top:1px solid var(--linea);display:flex;padding:8px 2px 14px;z-index:30;overflow-x:auto}
+  nav::-webkit-scrollbar{height:0}
+  nav button{flex:0 0 auto;min-width:55px;background:none;border:none;color:var(--txt-3);font-size:9px;display:flex;flex-direction:column;
+    align-items:center;gap:3px;cursor:pointer;font-weight:600;padding:4px 2px;white-space:nowrap}
+  nav button .ni{font-size:19px;line-height:1}
+  nav button.on{color:var(--rojo-2)}
+
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end}
+  .overlay.on{display:flex}
+  .hoja{width:100%;background:var(--panel);border-radius:22px 22px 0 0;padding:20px 18px 26px;border-top:1px solid var(--linea);animation:sube .35s ease}
+  @keyframes sube{from{transform:translateY(100%)}to{transform:none}}
+  .hoja .cerrar{float:right;font-size:22px;color:var(--txt-3);cursor:pointer;line-height:1}
+  .estrellas{font-size:30px;letter-spacing:6px;text-align:center;margin:10px 0;cursor:pointer}
+  .op-enc{display:flex;gap:8px;margin:8px 0 14px}
+  .op-enc .o{flex:1;text-align:center;font-size:12.5px;padding:10px 6px;border-radius:11px;background:var(--panel-2);border:1px solid var(--linea);cursor:pointer}
+  .op-enc .o.sel{border-color:var(--rojo)}
+  .inp{width:100%;background:var(--panel-2);border:1px solid var(--linea);border-radius:11px;padding:11px;color:var(--txt);font-size:13px;margin-bottom:10px;font-family:inherit}
+  .premio{text-align:center;padding:18px 6px}
+  .premio .big{font-size:40px}
+  .vista-cliente{font-size:10px;color:var(--txt-3);text-align:center;margin-top:8px}
+  .seg{display:flex;gap:6px;background:var(--panel-2);border:1px solid var(--linea);border-radius:12px;padding:4px;margin:4px 0 14px}
+  .seg button{flex:1;background:none;border:none;color:var(--txt-2);font-size:12px;font-weight:700;padding:9px 4px;border-radius:9px;cursor:pointer}
+  .seg button.on{background:var(--rojo);color:#fff}
+  .subview{display:none}.subview.on{display:block}
+</style>
+</head>
+<body>
+<div class="telefono">
+  <div class="notch"></div>
+
+  <header>
+    <div class="marca" onclick="irCierre()" style="cursor:pointer" title="Volver a la portada">
+      <img src="https://zcvcmwxhdyzufscebald.supabase.co/storage/v1/object/public/cartainteligentebucket/establecimientos/110/1766436830029-LOGO-BLANCO-y-rojo.webp"
+           alt="Ramoncita" onerror="this.style.display='none';document.getElementById('logotxt').style.display='block'">
+      <span class="logo-txt" id="logotxt" style="display:none">Ramon<b>cita</b></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:9px">
+      <button onclick="abrirAlertas()" style="position:relative;background:var(--panel);border:1px solid var(--linea);border-radius:999px;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--txt)" title="Alertas de Ramón">🔔
+        <span id="alert-badge" style="position:absolute;top:-4px;right:-4px;background:var(--rojo);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px">14</span>
+      </button>
+      <div class="fudo"><span class="dot"></span> FUDO ✓</div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- INICIO -->
+    <section class="pantalla" id="p-inicio">
+      <div class="saludo">Hola, Cristian 👋 <span class="hora">— sábado, 21:14</span></div>
+      <div class="noti">
+        <div class="ic">🔔</div>
+        <div><b>Ramón te avisa</b><span>El <b>salmón</b> te alcanza para ~2 días. Conviene comprar hoy para cubrir el fin de semana.</span></div>
+      </div>
+      <div class="noti" style="border-color:var(--amarillo);background:linear-gradient(160deg,#221a08,#16161a)">
+        <div class="ic">💲</div>
+        <div><b>Alza de precio detectada</b><span>El <b>salmón</b> subió de $12.000 a <b>$15.000/kg (+25%)</b>. Te afecta 6 platos — revísalo en Operación.</span></div>
+      </div>
+      <div class="card acento">
+        <div class="kpi-hero">
+          <div><div class="val">$487.300</div><div class="lbl">Ventas de hoy</div></div>
+          <div class="chip-up">▲ 6% vs. ayer</div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="barra-lbl"><span>Hoy ~$500K/día</span><span>Meta: recuperar los $3M 🚀</span></div>
+        <div class="barra"><i style="width:17%"></i></div>
+        <div class="lbl" style="font-size:11.5px;color:var(--txt-2)">Vas en el 17% del camino de vuelta a tu mejor época. Ramón está para ayudarte a subir esa barra.</div>
+      </div>
+
+      <div class="card" style="border-color:var(--rojo);background:linear-gradient(160deg,#220d11,#16161a)">
+        <div style="font-size:11px;color:var(--txt-2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">💡 Oportunidad que Ramón detecta</div>
+        <div style="font-size:31px;font-weight:800;color:var(--rojo-2)">$1.240.000<span style="font-size:14px;color:var(--txt-2);font-weight:600"> / mes</span></div>
+        <div style="margin-top:8px">
+          <div class="fila"><div class="sub">♻️ Reducir merma</div><div class="der">$120.000</div></div>
+          <div class="fila"><div class="sub">🍣 Ajustar platos mal cobrados</div><div class="der">$240.000</div></div>
+          <div class="fila"><div class="sub">🛵 Margen perdido en apps</div><div class="der">$90.000</div></div>
+          <div class="fila"><div class="sub">↩️ Reactivar clientes que no vuelven</div><div class="der">$150.000</div></div>
+          <div class="fila"><div class="sub">🎯 Promos en horas muertas</div><div class="der">$640.000</div></div>
+        </div>
+        <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:8px">Esto es lo que Ramón puede ayudarte a recuperar cada mes. El servicio se paga solo.</div>
+      </div>
+      <div class="kpis">
+        <div class="mini"><div class="v">$19.100</div><div class="l">Ticket promedio</div></div>
+        <div class="mini"><div class="v">63</div><div class="l">Comensales hoy</div></div>
+        <div class="mini"><div class="v">25</div><div class="l">Mesas atendidas</div></div>
+        <div class="mini"><div class="v">4,6 ★</div><div class="l">Reputación Google</div></div>
+      </div>
+      <div class="card">
+        <div class="fila"><div class="nom">💳 Tarjeta</div><div class="der">$297.300</div></div>
+        <div class="fila"><div class="nom">💵 Efectivo</div><div class="der">$141.300</div></div>
+        <div class="fila"><div class="nom">📲 Transferencia</div><div class="der">$48.700</div></div>
+      </div>
+      <h2 class="titulo">📈 Ventas últimos 14 días</h2>
+      <div class="card">
+        <svg viewBox="0 0 300 70" style="width:100%;height:62px" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#ff3a47" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"
+            points="0,54 23,57 46,49 69,51 92,45 115,47 138,41 161,43 184,37 207,39 230,31 253,34 276,27 300,22"/>
+        </svg>
+        <div class="fila" style="border:none;padding-top:6px"><div class="sub">Tendencia</div><div class="der" style="color:var(--verde)">▲ subiendo 8% en 2 semanas</div></div>
+      </div>
+
+      <h2 class="titulo">🔮 Pronóstico de Ramón <span class="tag t-propone">Propone</span></h2>
+      <div class="card resumen" style="font-size:13px">
+        Este <b>sábado</b> proyecto unas <b>$610.000</b> en ventas (tu mejor día). Para no quedar corto: ten <b>12 kg de salmón</b> listos y <b>suma 1 persona</b> en el turno de la noche.
+      </div>
+
+      <h2 class="titulo">Resumen de Ramón <span class="tag t-avisa">Avisa</span></h2>
+      <div class="card resumen">
+        Vas <span class="hl">12% sobre el sábado pasado</span>. El sushi tira fuerte hoy; las hamburguesas van lentas.
+        Detecté que <span class="hl">3 platos se venden bajo su margen objetivo</span> — estás dejando ~<span class="hl">$240.000 al mes</span> en la mesa. Te lo muestro en Carta.
+      </div>
+      <button class="btn sec" onclick="irCierre()">✨ Ver todo lo que tu local puede tener</button>
+    </section>
+
+    <!-- CRECER -->
+    <section class="pantalla" id="p-crecer">
+      <div class="saludo">Crecer</div>
+      <p style="font-size:12.5px;color:var(--txt-2);margin:2px 4px 14px">Lo que Ramón propone para traer más ventas. Tú apruebas antes de publicar.</p>
+      <div class="card">
+        <h2 class="titulo" style="margin-top:0">📣 Contenido para redes <span class="tag t-propone">Propone</span></h2>
+        <div class="resumen" style="font-size:13px">Publicación lista para <b>@laramonachillan</b> empujando tu plato estrella:</div>
+        <div class="card" style="background:var(--panel-2);margin:10px 0 6px">
+          <div class="platofoto">
+            <img src="https://zcvcmwxhdyzufscebald.supabase.co/storage/v1/object/public/cartainteligentebucket/establecimientos/110/1766792740877-blob.webp" alt="">
+            <div style="font-size:12.5px;line-height:1.5">"🔥 El <b>30 Verde Mix</b> es el favorito de la casa: 30 cortes para compartir. Este finde, en Ramoncita. 🍣 Claudio Arrau 177."</div>
+          </div>
+        </div>
+        <button class="btn-mini">Aprobar y programar</button>
+      </div>
+      <div class="card">
+        <h2 class="titulo" style="margin-top:0">🎯 Promoción inteligente <span class="tag t-propone">Propone</span></h2>
+        <div class="resumen" style="font-size:13px">Tus <b>martes y miércoles 18:00–20:00</b> están muertos. Ramón propone un <b>Happy Hour de sushi</b> esas horas.</div>
+        <div class="fila"><div class="sub">Impacto estimado</div><div class="der" style="color:var(--verde)">+ ~$180.000 / semana</div></div>
+        <button class="btn-mini">Activar promo</button>
+      </div>
+      <div class="card">
+        <h2 class="titulo" style="margin-top:0">📍 Campaña en Chillán <span class="tag t-propone">Propone</span></h2>
+        <div class="resumen" style="font-size:13px">Aviso geolocalizado a 3 km del local, público 18–45.</div>
+        <div class="fila"><div class="sub">Presupuesto sugerido</div><div class="der">$30.000</div></div>
+        <div class="fila"><div class="sub">Alcance estimado</div><div class="der">~8.500 personas</div></div>
+        <button class="btn-mini">Revisar campaña</button>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section class="pantalla" id="p-clientes">
+      <div class="saludo">Clientes</div>
+      <div class="card acento">
+        <div class="kpi-hero"><div><div class="val">342</div><div class="lbl">Clientes que ya conoces</div></div><div class="pill">+38 esta semana</div></div>
+        <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:8px">Antes eran boletas anónimas. Hoy los conoces gracias a la encuesta del QR.</div>
+      </div>
+      <div class="card">
+        <h2 class="titulo" style="margin-top:0">↩️ Reactivación <span class="tag t-ejecuta">Propone → Ejecuta</span></h2>
+        <div class="resumen" style="font-size:13px"><b>28 clientes</b> no vuelven hace más de 30 días. Ramón propone enviarles un WhatsApp con un 2x1 en sushi.</div>
+        <button class="btn-mini">Ver mensaje y aprobar</button>
+      </div>
+      <div class="card">
+        <div class="fila"><div><div class="nom">🎂 Cumpleaños del mes</div><div class="sub">Saludo + regalo automático</div></div><div class="der">14</div></div>
+        <div class="fila"><div><div class="nom">⭐ Programa de puntos</div><div class="sub">Clientes activos</div></div><div class="der">211</div></div>
+        <div class="fila"><div><div class="nom">⬆️ Upselling sugerido</div><div class="sub">"Agrega gohan por $2.500"</div></div><div class="der">+8% ticket</div></div>
+      </div>
+      <div class="card">
+        <h2 class="titulo" style="margin-top:0">🌟 Reseñas <span class="tag t-propone">Propone</span></h2>
+        <div class="resumen" style="font-size:13px">Google: <b>4,6 ★</b> (128 reseñas). Ramón identificó <b>12 clientes contentos</b> para invitar a dejar reseña.</div>
+        <button class="btn-mini">Invitar a reseñar</button>
+      </div>
+    </section>
+
+    <!-- CARTA -->
+    <section class="pantalla" id="p-carta">
+      <div class="saludo">Tu carta, en números</div>
+      <p style="font-size:12.5px;color:var(--txt-2);margin:2px 4px 14px">Ingeniería de Menú: cada plato según <b>cuánto se vende</b> y <b>cuánto te deja</b>. Toca uno para ver su detalle.</p>
+      <div class="matriz">
+        <div class="cuad c-estrella"><h4>🌟 Estrellas</h4><small>mucha venta · alto margen</small>
+          <div class="plato" onclick="verPlato('verde')">30 Verde Mix <b>·320</b></div>
+          <div class="plato" onclick="verPlato('bikini')">Fondo de Bikini <b>·245</b></div>
+        </div>
+        <div class="cuad c-caballo"><h4>🐎 Caballos</h4><small>mucha venta · margen bajo</small>
+          <div class="plato" onclick="verPlato('crispy')">Crispy Soul Ramen <b>·410</b></div>
+          <div class="plato" onclick="verPlato('guerrero')">Ramen Dulce Guerrero <b>·360</b></div>
+        </div>
+        <div class="cuad c-puzzle"><h4>🧩 Puzzles</h4><small>poca venta · alto margen</small>
+          <div class="plato" onclick="verPlato('ceviche')">Ceviche Mixto <b>·70</b></div>
+          <div class="plato" onclick="verPlato('thai')">Papas Thai <b>·85</b></div>
+          <div class="plato" onclick="verPlato('irre')">Irresistible <b>·38</b></div>
+        </div>
+        <div class="cuad c-perro"><h4>🐶 Perros</h4><small>poca venta · margen bajo</small>
+          <div class="plato" onclick="verPlato('hamburguesa')">Hamburguesa Clásica <b>·42</b></div>
+        </div>
+      </div>
+      <p style="font-size:10.5px;color:var(--txt-3);margin:0 4px 12px">El número (·320) es cuánto se vende al mes. Eje horizontal = venta · eje vertical = margen.</p>
+      <div class="card" id="detalle-plato">
+        <div class="platofoto">
+          <img id="dp-img" src="https://zcvcmwxhdyzufscebald.supabase.co/storage/v1/object/public/cartainteligentebucket/establecimientos/110/1766792740877-blob.webp" alt="">
+          <div><div class="nom" id="dp-nom" style="font-size:16px">30 Verde Mix</div><div class="sub" id="dp-cat">Promoción de sushi · 🌟 Estrella</div></div>
+        </div>
+        <div style="background:var(--panel-2);border:1px solid var(--linea);border-radius:12px;padding:10px 13px;font-size:12.5px;color:var(--txt-2);margin-top:14px">📊 Vendidos: <b style="color:var(--txt);font-size:14px" id="dp-u">320/mes</b> &nbsp;·&nbsp; eje de rotación</div>
+        <div class="kpis" style="margin-top:10px">
+          <div class="mini"><div class="v" id="dp-precio">$15.990</div><div class="l">Precio de venta</div></div>
+          <div class="mini"><div class="v" id="dp-costo">$4.800</div><div class="l">Costo de insumos</div></div>
+          <div class="mini"><div class="v" id="dp-fc">70%</div><div class="l">Margen %</div></div>
+          <div class="mini"><div class="v" id="dp-margen">$11.190</div><div class="l">Margen por plato</div></div>
+        </div>
+        <h2 class="titulo">Recomendación de Ramón <span class="tag t-propone">Propone</span></h2>
+        <div class="resumen" id="dp-reco" style="font-size:13px">Tu plato más rentable y de los más vendidos. <b>Protégelo</b>: que nunca falte y destácalo en la carta y en redes.</div>
+      </div>
+    </section>
+
+    <!-- OPERACIÓN -->
+    <section class="pantalla" id="p-oper">
+      <div class="saludo">Operación</div>
+      <h2 class="titulo">📦 Insumos <span class="tag t-avisa">Avisa</span> <span class="tag t-propone">Propone</span></h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Salmón</div><div class="sub">6,5 kg · usa 3,2 kg/día</div></div><div class="der" style="color:var(--rojo-alerta)">~2 días<br><span style="font-size:10px;color:var(--txt-2)">comprar hoy</span></div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Camarón</div><div class="sub">3,0 kg · usa 1,8 kg/día</div></div><div class="der" style="color:var(--rojo-alerta)">~1,7 días</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Palta</div><div class="sub">8,0 kg · usa 4,0 kg/día</div></div><div class="der" style="color:var(--amarillo)">~2 días</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Pan de hamburguesa</div><div class="sub">40 u · usa 15/día</div></div><div class="der" style="color:var(--amarillo)">~2,6 días</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-v"></span>Arroz para sushi</div><div class="sub">25 kg · usa 5 kg/día</div></div><div class="der" style="color:var(--verde)">~5 días</div></div>
+      </div>
+      <div class="card resumen" style="font-size:12.5px">🧾 <b>Pedido sugerido hoy:</b> Salmón 10 kg · Camarón 6 kg · Palta 12 kg. <span class="tag t-propone">Propone</span></div>
+
+      <h2 class="titulo">💲 Alerta de precios de insumos <span class="tag t-avisa">Avisa</span></h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Salmón <b style="color:var(--rojo-alerta)">▲ +25%</b></div><div class="sub">$12.000 → $15.000 /kg · está en 6 platos</div></div><div class="der" style="color:var(--rojo-alerta)">$15.000</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Camarón <b style="color:var(--amarillo)">▲ +7%</b></div><div class="sub">$9.500 → $10.200 /kg</div></div><div class="der" style="color:var(--amarillo)">$10.200</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-v"></span>Palta <b style="color:var(--verde)">▼ −19%</b></div><div class="sub">$4.200 → $3.400 /kg · oportunidad</div></div><div class="der" style="color:var(--verde)">$3.400</div></div>
+      </div>
+      <div class="card resumen" style="font-size:12.5px">El <b>salmón subió 25%</b> esta semana — es tu insumo más sensible, está en 6 platos y te baja el margen del sushi de salmón. Ramón propone: <b>subir ~8% los rolls de salmón</b> mientras dure el alza, o cotizar otro proveedor. La <b>palta bajó 19%</b>: buen momento para stockear y recuperar margen. <span class="tag t-propone">Propone</span></div>
+
+      <h2 class="titulo">🕗 Demanda por hora</h2>
+      <div class="card">
+        <div class="heat" id="heat"></div>
+        <div class="resumen" style="font-size:12px;margin-top:10px">Tu peak es <b>sábado ~21:00</b>. El sábado a esa hora te falta gente; lunes y martes sobra un turno. <span class="tag t-propone">Propone</span></div>
+      </div>
+      <h2 class="titulo">🧑‍🍳 Evaluación de servicio <span class="tag t-avisa">Avisa</span></h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom">🏆 Javiera <span class="pill" style="font-size:9px">Garzón del mes</span></div><div class="sub">Amabilidad</div></div><div class="der" style="color:var(--verde)">4,8 ★</div></div>
+        <div class="fila"><div><div class="nom">Diego</div><div class="sub">Amabilidad</div></div><div class="der">4,5 ★</div></div>
+        <div class="fila"><div><div class="nom">Camila</div><div class="sub">Amabilidad</div></div><div class="der">4,2 ★</div></div>
+        <div class="fila"><div><div class="nom">⏱️ Demora de cocina</div><div class="sub">Promedio (separado del garzón)</div></div><div class="der">18 min</div></div>
+        <div style="font-size:11.5px;color:var(--txt-2);margin-top:10px;line-height:1.5">Se evalúa con muchas respuestas y separando cocina de servicio. Para reconocer y mejorar, no para castigar.</div>
+        <button class="btn sec" style="margin-top:12px" onclick="abrirEncuesta()">👁️ Ver lo que ve tu cliente al escanear</button>
+      </div>
+    </section>
+
+    <!-- MERMAS -->
+    <section class="pantalla" id="p-mermas">
+      <div class="saludo">Mermas</div>
+      <p style="font-size:12.5px;color:var(--txt-2);margin:2px 4px 14px">Lo que compras y no se convierte en venta. El robo silencioso del margen.</p>
+      <div class="card acento">
+        <div class="kpi-hero">
+          <div><div class="val">$312.000</div><div class="lbl">Merma estimada este mes</div></div>
+          <div class="chip-up chip-down">▲ 6,5% de tus compras</div>
+        </div>
+        <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:10px">El sector pierde entre 4% y 10% de lo que compra. Tú vas en 6,5%. Bajarlo a 4% te devuelve <b style="color:var(--rojo-2)">~$120.000 al mes</b>.</div>
+      </div>
+      <h2 class="titulo">Teórico vs. real <span class="tag t-avisa">Avisa</span></h2>
+      <div class="card resumen" style="font-size:12.5px">
+        Por tus ventas, <b>deberías</b> haber usado 84 kg de salmón este mes. El inventario dice que se fueron <b>93 kg</b>.
+        Esos <span class="hl">9 kg de diferencia</span> son merma: ~$108.000 en salmón que no llegó al plato.
+      </div>
+      <h2 class="titulo">🥇 Dónde se te va</h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Salmón</div><div class="sub">perecible caro</div></div><div class="der" style="color:var(--rojo-alerta)">$108.000</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Camarón</div><div class="sub">perecible</div></div><div class="der" style="color:var(--rojo-alerta)">$64.000</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Palta</div><div class="sub">se pasa rápido</div></div><div class="der" style="color:var(--amarillo)">$52.000</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Limón / cilantro</div><div class="sub">se seca</div></div><div class="der" style="color:var(--amarillo)">$38.000</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-v"></span>Otros</div></div><div class="der">$50.000</div></div>
+      </div>
+      <h2 class="titulo">🔎 Por qué se pierde</h2>
+      <div class="card">
+        <div class="fila"><div class="nom">⏳ Vencimiento / perecibles</div><div class="der">41%</div></div>
+        <div class="fila"><div class="nom">🍽️ Porciones sin criterio</div><div class="der">24%</div></div>
+        <div class="fila"><div class="nom">🔪 Despiece / preparación</div><div class="der">19%</div></div>
+        <div class="fila"><div class="nom">❓ Consumos no registrados</div><div class="der">16%</div></div>
+      </div>
+      <h2 class="titulo">Recomendación de Ramón <span class="tag t-propone">Propone</span></h2>
+      <div class="card resumen" style="font-size:13px">
+        El salmón es tu mayor fuga. Compra <b>2 veces por semana</b> en vez de 1 (menos se echa a perder) y estandariza el despiece.
+        Solo eso baja tu merma cerca de un <span class="hl">25% en pocas semanas</span>.
+      </div>
+    </section>
+
+    <!-- PLATA (Finanzas) -->
+    <section class="pantalla" id="p-plata">
+      <div class="saludo">Plata</div>
+      <div class="seg">
+        <button class="on" id="sg-rent" onclick="subPlata('rent')">Rentabilidad</button>
+        <button id="sg-caja" onclick="subPlata('caja')">Caja</button>
+        <button id="sg-deli" onclick="subPlata('deli')">Delivery</button>
+      </div>
+
+      <div class="subview on" id="sv-rent">
+        <div class="card acento">
+          <div class="kpi-hero"><div><div class="val">$483.000</div><div class="lbl">Punto de equilibrio diario</div></div><div class="chip-up chip-down">en el filo</div></div>
+          <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:10px">Hoy vendiste $487.300. Estás <b style="color:var(--amarillo)">justo en el filo</b>: cubres costos y casi no ganas.</div>
+        </div>
+        <h2 class="titulo">Prime cost (lo que te come la venta)</h2>
+        <div class="card">
+          <div class="fila"><div class="nom">🥩 Insumos</div><div class="der">32%</div></div>
+          <div class="fila"><div class="nom">👥 Personal</div><div class="der" style="color:var(--rojo-alerta)">38%</div></div>
+          <div class="fila"><div class="nom">= Prime cost</div><div class="der" style="color:var(--rojo-alerta)">70%</div></div>
+          <div style="font-size:11.5px;color:var(--txt-2);margin-top:8px;line-height:1.5">Lo sano es 55–65%. Vas en 70%: tu personal (38%) está sobre el ideal (34%). El turno que cortaste te acercó al equilibrio, pero aún aprieta.</div>
+        </div>
+        <h2 class="titulo">Gastos fijos del mes</h2>
+        <div class="card">
+          <div class="fila"><div class="nom">🏠 Arriendo</div><div class="der">$2.200.000</div></div>
+          <div class="fila"><div class="nom">👥 Sueldos</div><div class="der">$5.700.000</div></div>
+          <div class="fila"><div class="nom">💡 Servicios</div><div class="der">$890.000</div></div>
+        </div>
+        <h2 class="titulo">Recomendación de Ramón <span class="tag t-propone">Propone</span></h2>
+        <div class="card resumen" style="font-size:13px">Para <b>ganar de verdad</b> no basta con cubrir: necesitas subir ventas ~15% o bajar el prime cost 5 puntos. Por eso lo primero es la pestaña <b>Crecer</b>.</div>
+      </div>
+
+      <div class="subview" id="sv-caja">
+        <div class="card acento">
+          <div class="kpi-hero"><div><div class="val">-$18.400</div><div class="lbl">Descuadre de hoy</div></div><div class="chip-up chip-down">faltante</div></div>
+          <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:10px">El efectivo contado es $18.400 menos que lo registrado en el sistema.</div>
+        </div>
+        <h2 class="titulo">Cierre de hoy</h2>
+        <div class="card">
+          <div class="fila"><div class="nom">Esperado (sistema)</div><div class="der">$141.300</div></div>
+          <div class="fila"><div class="nom">Contado (caja)</div><div class="der">$122.900</div></div>
+          <div class="fila"><div class="nom">Diferencia</div><div class="der" style="color:var(--rojo-alerta)">-$18.400</div></div>
+        </div>
+        <h2 class="titulo">Descuadres del mes <span class="tag t-avisa">Avisa</span></h2>
+        <div class="card">
+          <div class="fila"><div><div class="nom">Acumulado</div><div class="sub">14 de 30 días con faltante</div></div><div class="der" style="color:var(--rojo-alerta)">-$214.000</div></div>
+          <div class="fila"><div><div class="nom">Turno tarde</div><div class="sub">concentra el 80% del faltante</div></div><div class="der" style="color:var(--rojo-alerta)">⚠️</div></div>
+        </div>
+        <div class="card resumen" style="font-size:13px">Ramón: el faltante se concentra en el <b>turno de la tarde</b>. No acuso a nadie, pero conviene revisar ese turno y el flujo de efectivo. <span class="tag t-propone">Propone</span></div>
+      </div>
+
+      <div class="subview" id="sv-deli">
+        <div class="card acento">
+          <div class="kpi-hero"><div><div class="val">31%</div><div class="lbl">De tus ventas son por delivery</div></div></div>
+          <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:10px">Pero las apps cobran comisión. Ojo con el margen real, no con la venta bruta.</div>
+        </div>
+        <h2 class="titulo">Ventas por canal</h2>
+        <div class="card">
+          <div class="fila"><div><div class="nom">🏠 Salón</div><div class="sub">sin comisión</div></div><div class="der" style="color:var(--verde)">$336K</div></div>
+          <div class="fila"><div><div class="nom">📱 WhatsApp propio</div><div class="sub">sin comisión</div></div><div class="der" style="color:var(--verde)">$58K</div></div>
+          <div class="fila"><div><div class="nom">🛵 PedidosYa</div><div class="sub">comisión 28%</div></div><div class="der" style="color:var(--amarillo)">$54K</div></div>
+          <div class="fila"><div><div class="nom">🛵 Rappi</div><div class="sub">comisión 30%</div></div><div class="der" style="color:var(--rojo-alerta)">$39K</div></div>
+        </div>
+        <h2 class="titulo">Margen real tras comisión <span class="tag t-avisa">Avisa</span></h2>
+        <div class="card resumen" style="font-size:12.5px">El <b>30 Verde Mix</b> en salón te deja $11.190. En <b>Rappi</b> (30% comisión) deja solo <b style="color:var(--rojo-2)">$6.390</b>. Al mismo precio, casi regalas el margen por la app.</div>
+        <div class="card resumen" style="font-size:13px">Ramón: sube ~12% el precio en apps para emparejar el margen, y empuja tu <b>WhatsApp propio</b> (0% comisión) con los clientes que ya capturaste. <span class="tag t-propone">Propone</span></div>
+      </div>
+    </section>
+
+    <!-- PERSONAL -->
+    <section class="pantalla" id="p-personal">
+      <div class="saludo">Personal</div>
+      <div class="card acento">
+        <div class="kpi-hero"><div><div class="val">38%</div><div class="lbl">Costo de personal (de tus ventas)</div></div><div class="chip-up chip-down">ideal 34%</div></div>
+        <div class="lbl" style="font-size:11.5px;color:var(--txt-2);margin-top:10px">Estás 4 puntos sobre lo sano. Con el turno que cortaste bajaste harto, pero aún hay que afinar <b>dónde</b> está tu gente.</div>
+      </div>
+
+      <h2 class="titulo">Productividad</h2>
+      <div class="kpis">
+        <div class="mini"><div class="v">$8.900</div><div class="l">Ventas por hora trabajada</div></div>
+        <div class="mini"><div class="v">$5.700.000</div><div class="l">Sueldos al mes</div></div>
+      </div>
+
+      <h2 class="titulo">⚖️ Dotación por franja <span class="tag t-propone">Propone</span></h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Sábado 20–23h</div><div class="sub">demanda alta · gente justa</div></div><div class="der" style="color:var(--rojo-alerta)">Falta 1</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-r"></span>Viernes 21–23h</div><div class="sub">demanda alta</div></div><div class="der" style="color:var(--rojo-alerta)">Falta 1</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-a"></span>Domingo noche</div><div class="sub">demanda media</div></div><div class="der" style="color:var(--amarillo)">Justo</div></div>
+        <div class="fila"><div><div class="nom"><span class="sem s-v"></span>Lunes y martes tarde</div><div class="sub">demanda baja</div></div><div class="der" style="color:var(--verde)">Sobra 1</div></div>
+      </div>
+      <div class="card resumen" style="font-size:12.5px">Ramón: <b>mueve una persona del lunes/martes en la tarde al sábado en la noche</b>. Recuperas ventas en tu hora peak <b>sin contratar a nadie</b> ni subir el costo. <span class="tag t-propone">Propone</span></div>
+
+      <h2 class="titulo">🔁 Rotación del equipo <span class="tag t-avisa">Avisa</span></h2>
+      <div class="card">
+        <div class="fila"><div><div class="nom">Equipo actual</div><div class="sub">5 personas (antes eran 9)</div></div><div class="der">5</div></div>
+        <div class="fila"><div><div class="nom">Salidas últimos 6 meses</div><div class="sub">contratar y entrenar cuesta caro</div></div><div class="der" style="color:var(--amarillo)">3</div></div>
+        <div class="fila"><div><div class="nom">🏆 Más productiva</div><div class="sub">cruza con la evaluación de servicio</div></div><div class="der" style="color:var(--verde)">Javiera</div></div>
+      </div>
+    </section>
+
+    <!-- RAMÓN -->
+    <section class="pantalla" id="p-ramon">
+      <div class="ramon-cab">
+        <div class="ramon-av">🤖</div>
+        <div><b>Ramón</b><br><span>El copiloto de tu local · en línea</span></div>
+      </div>
+      <div class="chat-wrap" id="chat">
+        <div class="msg r">Hola Cristian, soy Ramón. Pregúntame lo que quieras de tu local 🍣</div>
+      </div>
+      <div class="chips" id="chips">
+        <div class="chip-q" onclick="preg('salmon',this)">¿Cuánto salmón se usó ayer?</div>
+        <div class="chip-q" onclick="preg('hoy',this)">¿Cómo van las ventas de hoy?</div>
+        <div class="chip-q" onclick="preg('rentable',this)">¿Cuál es mi plato más rentable?</div>
+        <div class="chip-q" onclick="preg('sacar',this)">¿Qué saco de la carta?</div>
+        <div class="chip-q" onclick="preg('finde',this)">¿Cómo viene el fin de semana?</div>
+        <div class="chip-q" onclick="preg('precio',this)">¿Subió algún insumo?</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input id="chat-input" class="inp" style="margin-bottom:0" placeholder="Escríbele a Ramón..." onkeydown="if(event.key==='Enter')enviarChat()">
+        <button class="btn" style="width:auto;margin-top:0;padding:0 18px;font-size:16px" onclick="enviarChat()">➤</button>
+      </div>
+    </section>
+
+    <!-- PORTADA / CIERRE -->
+    <section class="pantalla activa" id="p-cierre">
+      <div class="saludo" style="margin-top:10px">Tu local, en la palma de tu mano</div>
+      <p style="font-size:12.5px;color:var(--txt-2);margin:2px 4px 14px">Esto es lo que Ramón hace por La Ramona, todos los días:</p>
+      <div class="card">
+        <div class="cap"><div class="ic">📈</div><div><b>Recuperar ventas</b><p>Marketing, promos para horas muertas y campañas en Chillán.</p></div></div>
+        <div class="cap"><div class="ic">🤝</div><div><b>Conocer y traer de vuelta a tus clientes</b><p>Captura quién es tu cliente y reactiva a los que dejaron de venir.</p></div></div>
+        <div class="cap"><div class="ic">🍣</div><div><b>Saber qué plato te deja plata</b><p>Ingeniería de Menú y food cost por plato.</p></div></div>
+        <div class="cap"><div class="ic">♻️</div><div><b>Tapar las fugas</b><p>Control de mermas y quiebres de insumos.</p></div></div>
+        <div class="cap"><div class="ic">💰</div><div><b>Saber si ganas o pierdes</b><p>Punto de equilibrio, cuadre de caja y margen real en apps de delivery.</p></div></div>
+        <div class="cap"><div class="ic">🧑‍🍳</div><div><b>Mejorar el servicio</b><p>Evaluación de garzones y opinión de cada cliente.</p></div></div>
+        <div class="cap"><div class="ic">💬</div><div><b>Preguntarle lo que quieras a tu local</b><p>Desde tu teléfono, cuando quieras.</p></div></div>
+      </div>
+      <button class="btn" onclick="ir('inicio')">👀 Velo por ti mismo — presiona aquí</button>
+    </section>
+
+  </main>
+
+  <nav>
+    <button id="n-inicio" onclick="ir('inicio')"><span class="ni">🏠</span>Inicio</button>
+    <button id="n-crecer" onclick="ir('crecer')"><span class="ni">📈</span>Crecer</button>
+    <button id="n-clientes" onclick="ir('clientes')"><span class="ni">🤝</span>Clientes</button>
+    <button id="n-carta" onclick="ir('carta')"><span class="ni">🍣</span>Carta</button>
+    <button id="n-oper" onclick="ir('oper')"><span class="ni">📦</span>Operación</button>
+    <button id="n-mermas" onclick="ir('mermas')"><span class="ni">♻️</span>Mermas</button>
+    <button id="n-plata" onclick="ir('plata')"><span class="ni">💰</span>Plata</button>
+    <button id="n-personal" onclick="ir('personal')"><span class="ni">👥</span>Personal</button>
+    <button id="n-ramon" onclick="ir('ramon')"><span class="ni">🤖</span>Ramón</button>
+  </nav>
+
+  <div class="overlay" id="overlay"><div class="hoja" id="hoja"></div></div>
+</div>
+
+<script>
+const tabs=['inicio','crecer','clientes','carta','oper','mermas','plata','personal','ramon'];
+function subPlata(s){
+  ['rent','caja','deli'].forEach(x=>{
+    document.getElementById('sv-'+x).classList.toggle('on', x===s);
+    document.getElementById('sg-'+x).classList.toggle('on', x===s);
+  });
+}
+function ir(t){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
+  document.getElementById('p-'+t).classList.add('activa');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));
+  const nb=document.getElementById('n-'+t); if(nb) nb.classList.add('on');
+  document.getElementById('main').scrollTop=0;
+}
+function irCierre(){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
+  document.getElementById('p-cierre').classList.add('activa');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('main').scrollTop=0;
+}
+
+const PLATOS={
+  verde:{n:'30 Verde Mix',c:'Promoción de sushi · 🌟 Estrella',p:'$15.990',co:'$4.800',fc:'70%',m:'$11.190',u:'320/mes',
+    img:'1766792740877-blob.webp',r:'Estrella: mucha venta (320/mes) y alto margen (70%). <b>Protégela</b>, que nunca falte y destácala en la carta y en redes.'},
+  bikini:{n:'Fondo de Bikini',c:'Sushi Burger · 🌟 Estrella',p:'$11.990',co:'$3.840',fc:'68%',m:'$8.150',u:'245/mes',
+    img:'',r:'Estrella: buena venta (245/mes) y alto margen (68%). Ideal para empujar en redes este fin de semana.'},
+  crispy:{n:'Crispy Soul Ramen',c:'Ramen · 🐎 Caballo de batalla',p:'$7.990',co:'$3.680',fc:'54%',m:'$4.310',u:'410/mes',
+    img:'1781549547623-product-1781549546335.webp',r:'Caballo de batalla: lo más vendido (410/mes) pero margen ajustado (54%). Revisa la porción o sube $500 sin miedo: la demanda lo aguanta.'},
+  guerrero:{n:'Ramen Dulce Guerrero',c:'Ramen · 🐎 Caballo de batalla',p:'$8.490',co:'$4.080',fc:'52%',m:'$4.410',u:'360/mes',
+    img:'1781550390494-product-1781550389167.webp',r:'Caballo de batalla: alta venta (360/mes), margen justo (52%). Optimiza el costo del pollo o ajusta precio con cuidado.'},
+  ceviche:{n:'Ceviche Mixto',c:'Ceviches · 🧩 Puzzle',p:'$14.490',co:'$5.220',fc:'64%',m:'$9.270',u:'70/mes',
+    img:'1766799649938-blob.webp',r:'Puzzle: buen margen (64%) pero se vende poco (70/mes). <b>Promociónalo</b>: ponlo arriba en la carta y ofrécelo como entrada.'},
+  thai:{n:'Papas Thai',c:'Papas con toppings · 🧩 Puzzle',p:'$13.990',co:'$4.620',fc:'67%',m:'$9.370',u:'85/mes',
+    img:'1766802837784-blob.webp',r:'Puzzle: rentable (67%) pero pocos lo piden (85/mes). Foto en redes y sugerencia del garzón pueden subirlo.'},
+  irre:{n:'Irresistible',c:'Tabla · 🧩 Puzzle',p:'$26.990',co:'$9.720',fc:'64%',m:'$17.270',u:'38/mes',
+    img:'1766763924116-blob.webp',r:'Puzzle: buen margen (64%, <b>$17.270</b>) pero rota poco (38/mes). <b>Promociónalo</b> como tabla para compartir — su precio alto rinde cuando entra a la mesa.'},
+  hamburguesa:{n:'Hamburguesa Clásica',c:'Hamburguesas · 🐶 Perro',p:'$6.990',co:'$3.910',fc:'44%',m:'$3.080',u:'42/mes',
+    img:'',r:'Perro: vende muy poco (42/mes, las hamburguesas van lentas) <b>y</b> tiene el margen más bajo de la carta (44%). El peor de los dos mundos. <b>Súbele el precio, mejora la receta o sácala</b>.'}
+};
+const BASE='https://zcvcmwxhdyzufscebald.supabase.co/storage/v1/object/public/cartainteligentebucket/establecimientos/110/';
+function verPlato(k){
+  const d=PLATOS[k]; if(!d)return;
+  document.getElementById('dp-nom').innerHTML=d.n;
+  document.getElementById('dp-cat').innerHTML=d.c;
+  document.getElementById('dp-precio').innerHTML=d.p;
+  document.getElementById('dp-costo').innerHTML=d.co;
+  document.getElementById('dp-u').innerHTML=d.u;
+  document.getElementById('dp-fc').innerHTML=d.fc;
+  document.getElementById('dp-margen').innerHTML=d.m;
+  document.getElementById('dp-reco').innerHTML=d.r;
+  const img=document.getElementById('dp-img');
+  if(d.img){img.style.visibility='visible';img.src=BASE+d.img;} else {img.style.visibility='hidden';}
+  document.getElementById('detalle-plato').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+const RESP={
+  salmon:[
+    "Ayer se usaron <b>3,2 kg de salmón</b>.",
+    "Sobre todo en: California Roll (1,4 kg), Ceviche Mixto (0,8 kg), gunkan de la tabla Irresistible (0,6 kg) y Fondo de Bikini (0,4 kg).",
+    "Te quedan <b>6,5 kg</b>. Con el consumo de estos días, alcanza para ~2 días.",
+    "Sí, conviene comprar salmón hoy. Pedido sugerido: <b>10 kg</b> para cubrir el fin de semana con margen."
+  ],
+  hoy:["Hoy llevas <b>$487.300</b>, un <b>6% sobre ayer</b> y 12% sobre el sábado pasado. Ticket promedio $19.100, 63 comensales. El sushi tira fuerte."],
+  rentable:["Tu plato más rentable y vendido es el <b>30 Verde Mix</b>: deja <b>$11.190</b> por plato (70% de margen). Es tu estrella, protégelo."],
+  sacar:["El candidato a sacar es la <b>Hamburguesa Clásica</b>: vende muy poco y tiene el margen más bajo de la carta (44%). Ojo: el Irresistible también rota poco, pero deja buen margen — ese promociónalo, no lo saques."],
+  finde:["El finde viene fuerte: tu peak es <b>sábado ~21:00</b>. Asegura salmón y camarón (van justos) y suma una persona el sábado en la noche."],
+  merma:["Este mes llevas ~<b>$312.000</b> en mermas (6,5% de tus compras). La mayor fuga es el <b>salmón</b> ($108.000). Comprando 2 veces por semana en vez de 1, la bajas cerca de 25%."],
+  oportunidad:["Detecté ~<b>$1.240.000/mes</b> en oportunidades: reducir merma, ajustar platos mal cobrados, margen en apps, reactivar clientes y promos para horas muertas. Te lo desgloso en la pantalla de Inicio."],
+  precio:["Ojo con los precios: el <b>salmón subió de $12.000 a $15.000/kg (+25%)</b> esta semana — es tu insumo más sensible, está en 6 platos. Te conviene subir ~8% los rolls de salmón o cotizar otro proveedor. La <b>palta bajó 19%</b> ($4.200 → $3.400): buen momento para comprar más."]
+};
+function preg(k, el){
+  add('u', el ? el.textContent : '...');
+  const lines=RESP[k]||["Lo reviso y te aviso."];
+  const typing=add('r','<i style="color:var(--txt-3)">Ramón está escribiendo…</i>');
+  setTimeout(()=>{ typing.remove(); lines.forEach((l,idx)=>setTimeout(()=>add('r',l), idx*650)); }, 700);
+}
+function add(tipo,html){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg '+tipo; d.innerHTML=html;
+  chat.appendChild(d);
+  const m=document.getElementById('main'); m.scrollTop=m.scrollHeight;
+  return d;
+}
+function enviarChat(){
+  const inp=document.getElementById('chat-input');
+  const txt=(inp.value||'').trim(); if(!txt)return;
+  add('u', txt); inp.value='';
+  const t=txt.toLowerCase();
+  let k=null;
+  if(t.includes('salm')) k='salmon';
+  else if(t.includes('merma')||t.includes('pierd')||t.includes('fuga')) k='merma';
+  else if(t.includes('precio')||t.includes('proveedor')||t.includes('insumo')||t.includes('subió')||t.includes('subio')) k='precio';
+  else if(t.includes('oportun')||t.includes('recuper')||t.includes('cuanto puedo')||t.includes('cuánto puedo')) k='oportunidad';
+  else if(t.includes('venta')||t.includes('hoy')||t.includes('vamos')||t.includes('como va')||t.includes('cómo va')) k='hoy';
+  else if(t.includes('rentab')||t.includes('mejor plato')||t.includes('mas deja')||t.includes('más deja')||t.includes('gana')) k='rentable';
+  else if(t.includes('sac')||t.includes('quit')||t.includes('elimin')||t.includes('peor')) k='sacar';
+  else if(t.includes('finde')||t.includes('fin de semana')||t.includes('sábado')||t.includes('sabado')||t.includes('pronos')||t.includes('pronós')) k='finde';
+  const typing=add('r','<i style="color:var(--txt-3)">Ramón está escribiendo…</i>');
+  setTimeout(()=>{
+    typing.remove();
+    const lines = k ? RESP[k] : ["Buena pregunta. En la versión completa te respondo eso con tus datos en vivo de FUDO. Por ahora prueba preguntándome por el salmón, las ventas de hoy, tu plato más rentable o las mermas."];
+    lines.forEach((l,idx)=>setTimeout(()=>add('r',l), idx*650));
+  }, 700);
+}
+
+(function(){
+  const dias=['L','M','M','J','V','S'];
+  const horas=['12','15','18','21','00'];
+  const data=[[1,1,1,1,2,2],[1,1,1,2,2,3],[0,0,1,1,2,2],[1,1,2,2,3,3],[0,0,1,1,2,2]];
+  const col=['#22222a','#5c1a1e','#a3171f','#ff2f3b'];
+  let h='<div></div>'+dias.map(d=>'<div class="hd">'+d+'</div>').join('');
+  data.forEach((row,ri)=>{
+    h+='<div class="rl">'+horas[ri]+'h</div>';
+    row.forEach(v=>{h+='<i style="background:'+col[v]+'"></i>';});
+  });
+  document.getElementById('heat').innerHTML=h;
+})();
+
+let paso=0;
+function abrirEncuesta(){ paso=0; pintarEncuesta(); document.getElementById('overlay').classList.add('on'); }
+function cerrarEncuesta(){ document.getElementById('overlay').classList.remove('on'); }
+function selOpt(el){ el.parentElement.querySelectorAll('.o').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); }
+function pintarEncuesta(){
+  const h=document.getElementById('hoja');
+  if(paso===0){
+    h.innerHTML='<span class="cerrar" onclick="cerrarEncuesta()">×</span>'+
+      '<h3 style="font-size:18px">¿Cómo estuvo tu visita?</h3>'+
+      '<p style="font-size:12.5px;color:var(--txt-2);margin-top:4px">Responde y gana <b>1 punto Ramoncita</b> 🎁</p>'+
+      '<div class="estrellas">★★★★★</div>'+
+      '<p style="font-size:13px;margin:6px 0 6px">¿La comida tardó?</p>'+
+      '<div class="op-enc"><div class="o" onclick="selOpt(this)">Para nada</div><div class="o" onclick="selOpt(this)">Justo</div><div class="o" onclick="selOpt(this)">Mucho</div></div>'+
+      '<p style="font-size:13px;margin:0 0 6px">¿El garzón fue amable?</p>'+
+      '<div class="op-enc"><div class="o" onclick="selOpt(this)">😍 Sí</div><div class="o" onclick="selOpt(this)">😐 Más o menos</div><div class="o" onclick="selOpt(this)">🙁 No</div></div>'+
+      '<button class="btn" onclick="paso=1;pintarEncuesta()">Continuar</button>'+
+      '<div class="vista-cliente">Vista del cliente — esto se abre al escanear el QR de la mesa</div>';
+  } else if(paso===1){
+    h.innerHTML='<span class="cerrar" onclick="cerrarEncuesta()">×</span>'+
+      '<h3 style="font-size:18px">¡Gracias! 🎉</h3>'+
+      '<p style="font-size:12.5px;color:var(--txt-2);margin:4px 0 12px">Déjanos tus datos para enviarte tu punto y sorpresas.</p>'+
+      '<input class="inp" placeholder="Tu nombre"><input class="inp" placeholder="Tu WhatsApp">'+
+      '<label style="font-size:11px;color:var(--txt-3);display:flex;gap:7px;align-items:flex-start;margin-bottom:12px"><input type="checkbox" checked> Acepto recibir novedades de Ramoncita (Ley 19.628)</label>'+
+      '<button class="btn" onclick="paso=2;pintarEncuesta()">Obtener mi punto 🎁</button>'+
+      '<div class="vista-cliente">Aquí se captura al cliente para fidelización</div>';
+  } else {
+    h.innerHTML='<span class="cerrar" onclick="cerrarEncuesta()">×</span>'+
+      '<div class="premio"><div class="big">🎁</div>'+
+      '<h3 style="font-size:19px;margin-top:6px">¡Ganaste 1 punto!</h3>'+
+      '<p style="font-size:13px;color:var(--txt-2);margin-top:6px">Junta 10 y tienes un roll gratis. Te esperamos pronto en Ramoncita 🍣</p></div>'+
+      '<button class="btn sec" onclick="cerrarEncuesta()">Cerrar</button>'+
+      '<div class="vista-cliente">Cristian ahora conoce a este cliente y puede traerlo de vuelta</div>';
+  }
+}
+
+/* ====== Centro de alertas (campana) ====== */
+let ALERTAS=[
+  {ic:'🔔',col:'var(--rojo-alerta)',t:'Salmón por agotarse',x:'Te alcanza para ~2 días. Compra hoy.'},
+  {ic:'💲',col:'var(--amarillo)',t:'Salmón subió +25%',x:'De $12.000 a $15.000/kg. Afecta 6 platos.'},
+  {ic:'📉',col:'var(--amarillo)',t:'Ventas bajo lo normal',x:'Vas 15% bajo el sábado pasado a esta hora.'},
+  {ic:'🎯',col:'var(--amarillo)',t:'Meta del mes en riesgo',x:'Faltan $4,2M en 9 días para llegar a la meta.'},
+  {ic:'💵',col:'var(--rojo-alerta)',t:'Descuadre de caja',x:'La caja de ayer cerró con $18.400 menos.'},
+  {ic:'🦐',col:'var(--rojo-alerta)',t:'Camarón por agotarse',x:'Va justo: ~1,7 días de cobertura.'},
+  {ic:'🫒',col:'var(--verde)',t:'Palta bajó 19%',x:'Buen momento para stockear y recuperar margen.'},
+  {ic:'⭐',col:'var(--rojo-alerta)',t:'Reseña de 2★',x:'Un cliente mencionó demora. Conviene responder.'},
+  {ic:'↩️',col:'var(--amarillo)',t:'Clientes sin volver',x:'5 habituales no vuelven hace 3 semanas.'},
+  {ic:'🎂',col:'var(--verde)',t:'Cumpleaños de cliente',x:'Hoy cumple Juan, habitual. Mándale un saludo.'},
+  {ic:'🍣',col:'var(--amarillo)',t:'Posible quiebre de plato',x:'El 30 Verde Mix puede quedarse sin palta esta noche.'},
+  {ic:'👥',col:'var(--rojo-alerta)',t:'Falta gente el sábado',x:'21h proyecto lleno y vas con dotación justa.'},
+  {ic:'🛵',col:'var(--amarillo)',t:'Margen bajo en Rappi',x:'Rappi te deja 30% menos por pedido.'},
+  {ic:'♻️',col:'var(--amarillo)',t:'Merma alta hoy',x:'Se descartó más salmón de lo normal.'}
+];
+const ALERTAS_BASE=ALERTAS.map(function(a){return Object.assign({},a);});
+function restaurarAlertas(){ ALERTAS=ALERTAS_BASE.map(function(a){return Object.assign({},a);}); pintarAlertas(); }
+function abrirAlertas(){ pintarAlertas(); document.getElementById('overlay').classList.add('on'); }
+function pintarAlertas(){
+  const h=document.getElementById('hoja');
+  let html='<span class="cerrar" onclick="cerrarEncuesta()">×</span>'+
+    '<h3 style="font-size:18px">🔔 Alertas de Ramón</h3>'+
+    '<p style="font-size:11.5px;color:var(--txt-2);margin:4px 0 12px">Toca ✓ cuando atiendas una. <span onclick="restaurarAlertas()" style="color:var(--rojo-2);cursor:pointer;font-weight:700;white-space:nowrap">↻ Restaurar (demo)</span></p>';
+  if(ALERTAS.length===0){
+    html+='<div style="text-align:center;padding:26px 6px"><div style="font-size:36px">✅</div><p style="font-size:14px;margin-top:8px">¡Estás al día! Ramón no tiene alertas pendientes.</p></div>';
+  } else {
+    ALERTAS.forEach(function(a,i){
+      html+='<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--linea)">'+
+        '<div style="font-size:18px">'+a.ic+'</div>'+
+        '<div style="flex:1"><b style="font-size:13.5px;color:'+a.col+'">'+a.t+'</b><div style="font-size:12px;color:var(--txt-2);margin-top:2px">'+a.x+'</div></div>'+
+        '<button onclick="descartar('+i+')" style="background:var(--panel-2);border:1px solid var(--linea);color:var(--verde);border-radius:8px;width:30px;height:30px;cursor:pointer;font-weight:700;flex:0 0 auto">✓</button>'+
+      '</div>';
+    });
+  }
+  h.innerHTML=html;
+  const b=document.getElementById('alert-badge');
+  if(b){ b.textContent=ALERTAS.length; b.style.display=ALERTAS.length? 'flex':'none'; }
+}
+function descartar(i){ ALERTAS.splice(i,1); pintarAlertas(); }
+</script>
+</body>
+</html>
