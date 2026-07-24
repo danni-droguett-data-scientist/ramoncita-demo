@@ -5,8 +5,7 @@ diario de un vistazo. El nombre juega con *"tu local en la palma"* (de la mano).
 
 **Language / Idioma:** [English](README.md) | Español
 
-> **Demo estática** — abre `index.html` localmente (ver “Cómo correr”) o publica la
-> carpeta en GitHub Pages / Vercel para tener una URL en vivo.
+**🔗 Demo en vivo:** https://ramoncita.vercel.app
 
 ---
 

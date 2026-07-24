@@ -6,8 +6,7 @@ palm of your hand).
 
 **Language / Idioma:** English | [Español](README.es.md)
 
-> **Static demo** — open `index.html` locally (see “Run”) or deploy the folder to
-> GitHub Pages / Vercel to get a live URL.
+**🔗 Live demo:** https://ramoncita.vercel.app
 
 ---
 
