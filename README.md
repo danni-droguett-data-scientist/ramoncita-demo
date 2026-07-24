@@ -4,6 +4,8 @@ A mobile-first demo dashboard for restaurant management — the kind of at-a-gla
 an owner checks daily. The name plays on *"tu local en la palma"* (your place in the
 palm of your hand).
 
+**Language / Idioma:** English | [Español](README.es.md)
+
 > **Static demo** — open `index.html` locally (see “Run”) or deploy the folder to
 > GitHub Pages / Vercel to get a live URL.
 
